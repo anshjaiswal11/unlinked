@@ -4,12 +4,14 @@ import { FormEvent, useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { Lock, Mail, Unlink } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
+import { getSupabaseConfig } from '@/lib/supabase/config'
 import ThemeToggle from '@/components/ThemeToggle'
 
 type AuthMode = 'login' | 'signup'
 
 export default function LoginPage() {
   const router = useRouter()
+  const hasSupabaseConfig = Boolean(getSupabaseConfig())
   const [mode, setMode] = useState<AuthMode>('login')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -42,6 +44,11 @@ export default function LoginPage() {
     }
 
     startTransition(async () => {
+      if (!hasSupabaseConfig) {
+        setError('Supabase is not configured for this deployment.')
+        return
+      }
+
       const supabase = createClient()
 
       if (mode === 'login') {
@@ -206,11 +213,17 @@ export default function LoginPage() {
                 </p>
               )}
 
+              {!hasSupabaseConfig && (
+                <p style={{ color: 'var(--color-brand-coral)', fontSize: '0.875rem', lineHeight: 1.55, margin: 0 }}>
+                  Deployment setup is missing Supabase environment variables.
+                </p>
+              )}
+
               <button
                 id="login-submit"
                 type="submit"
                 className="btn-primary"
-                disabled={isPending || !email || !password || (mode === 'signup' && !confirmPassword)}
+                disabled={!hasSupabaseConfig || isPending || !email || !password || (mode === 'signup' && !confirmPassword)}
                 style={{ width: '100%', marginTop: '0.25rem' }}
               >
                 {isPending

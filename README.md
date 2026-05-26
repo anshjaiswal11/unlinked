@@ -38,7 +38,14 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## Deploying to Vercel
 
-This repo includes `vercel.json` for the Next.js build. Add the same environment variables in Vercel Project Settings before deploying.
+This repo includes `vercel.json` for the Next.js build. Add the same environment variables in Vercel Project Settings before deploying:
+
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `NEXT_PUBLIC_APP_URL`
+
+For the first two values, set them for Production, Preview, and Development before building. Next.js inlines `NEXT_PUBLIC_*` variables during `next build`, so a Vercel deployment built without them cannot authenticate users until you add the variables and redeploy.
 
 ## Architecture
 
